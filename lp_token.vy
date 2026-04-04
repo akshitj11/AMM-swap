@@ -24,11 +24,25 @@ def burn (to: address, amount: uint256):
     self.totalSupply -= amount
     
 @external
-def transfer(to: address, amount: uint256):
-    assert self.balanceOf[msg.sender] >= amount
-    self.msg.sender -= amount
+def transfer(to: address, amount: uint256) -> bool:
+    assert self.balanceOf[msg.sender] >= amount , "insuff bal."
+    self.balanceOf[msg.sender] -= amount
     self.balanceOf[to] += amount
-    
+    return True
+
+@external
+def approve(spender: address, amount: uint256) -> bool:
+    self.allowance[msg.sender][spender] = amount
+    return True 
+@external
+def transferFrom(owner: address, to: address, amount: uint256) -> bool:
+    assert self.allowance[owner][msg.sender] >= amount , "spender not approved for enough."
+    assert self.balanceOf[owner] >= amount , "insuff balance"
+    self.allowance[ownner][msg.sender] -= amount
+    self.balanceOf[owner] -= amount
+    self.balanceOf[to] += amount
+    return True
+
     
     
     
