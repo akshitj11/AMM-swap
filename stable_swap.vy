@@ -60,12 +60,13 @@ def add_liquidity(amount0: uint256, amount1: uint256) -> uint256: #return amount
     lp_amount = min(
         amount0 * total_supply / self.reserve0,
         amount1 * total_supply / self.reserve1
-         assert lp_amount > 0, "insufficient liquidity minted"
+    )
+    assert lp_amount > 0, "insufficient liquidity minted"
     LPToken(self.lp_token).mint(msg.sender, lp_amount)
     self.reserve0 += amount0
     self.reserve1 += amount1
     return lp_amount
-    )
+    
 
 @external
 def remove_liquidity(lp_amount: uint256) -> (uint256, uint256):
@@ -81,6 +82,5 @@ def remove_liquidity(lp_amount: uint256) -> (uint256, uint256):
     self.reserve0 -= amount0
     self.reserve1 -= amount1
     return amount0, amount1
-   )
 
     
