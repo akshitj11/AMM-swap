@@ -67,4 +67,20 @@ def add_liquidity(amount0: uint256, amount1: uint256) -> uint256: #return amount
     return lp_amount
     )
 
+@external
+def remove_liquidity(lp_amount: uint256) -> (uint256, uint256):
+    
+    total_supply: uint256 = LPToken(self.lp_token).totalSupply()
+    amount0: uint256 = lp_amount * self.reserve0 / total_supply
+    amount1: uint256 = lp_amount * self.reserve1 / total_supply
+    
+    assert amount0 > 0 and amount1 > 0, "insufficient liquidity burned"
+    LPToken(self.lp_token).burn(msg.sender, lp_amount)
+    ERC20(self.token0).transfer(msg.sender, amount0)
+    ERC20(self.token1).transfer(msg.sender, amount1)
+    self.reserve0 -= amount0
+    self.reserve1 -= amount1
+    return amount0, amount1
+   )
+
     
