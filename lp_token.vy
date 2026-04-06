@@ -1,3 +1,4 @@
+# @version ^0.3.10
 name: String[64]
 symbol: String[32]
 decimals: uint8
