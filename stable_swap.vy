@@ -83,4 +83,25 @@ def remove_liquidity(lp_amount: uint256) -> (uint256, uint256):
     self.reserve1 -= amount1
     return amount0, amount1
 
-    
+@internal
+def _get_D(x: uint256, y: uint256) -> uint256:
+    S: uint256 = x + y
+     if S == 0:
+        return 0
+   
+    D: uint256 = S
+    Ann: uint256 = 4 * self.A
+    for _ in range(255):
+        D_prev: uint256 = D
+        D3: uint256 = D * D * D
+        D = (Ann * S + 2 * D3 / (x * y)) * D / ((Ann - 1) * D + 3 * D3 / (x * y))
+
+        if D > D_prev:
+            if D - D_prev <= 1:
+                return D
+        else:
+            if D_prev - D <= 1:
+                return D
+
+    return D
+       
