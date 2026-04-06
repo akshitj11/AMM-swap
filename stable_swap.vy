@@ -123,4 +123,39 @@ def _get_y(x_new: uint256, D: uint256) -> uint256:
                 return y
 
     return y
-  
+
+@external
+def swap(token_in: address, amount_in: uint256) -> uint256:
+    is_token0: bool = token_in == self.token0
+    assert is_token0 or token_in == self.token1, "invalid token"
+    ERC20(token_in).transferFrom(msg.sender, self, amount_in)
+    D: uint256 = self._get_D(self.reserve0, self.reserve1)
+    x_new: uint256 = 0
+    y_old: uint256 = 0
+    y_new: uint256 = 0
+
+    if is_token0:
+        x_new = self.reserve0 + amount_in
+        y_old = self.reserve1
+        y_new = self._get_y(x_new, D)
+    else:
+        x_new = self.reserve1 + amount_in
+        y_old = self.reserve0
+        y_new = self._get_y(x_new, D)
+    amount_out: uint256 = y_old - y_new
+    fee_amount: uint256 = amount_out * self.fee / 10000
+    amount_out = amount_out - fee_amount
+    assert amount_out > 0, "insufficient output amount"
+    if is_token0:
+        ERC20(self.token1).transfer(msg.sender, amount_out)
+    else:
+        ERC20(self.token0).transfer(msg.sender, amount_out)
+
+    if is_token0:
+        self.reserve0 += amount_in
+        self.reserve1 = y_new + fee_amount
+    else:
+        self.reserve1 += amount_in
+        self.reserve0 = y_new + fee_amount
+     return amount_out
+    
