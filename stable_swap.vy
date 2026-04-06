@@ -105,3 +105,22 @@ def _get_D(x: uint256, y: uint256) -> uint256:
 
     return D
        
+@internal
+def _get_y(x_new: uint256, D: uint256) -> uint256:
+
+    Ann: uint256 = 4 * self.A
+    b: uint256 = x_new + D / Ann
+    c: uint256 = D * D * D / (4 * x_new * Ann)
+    y: uint256 = D
+    for _ in range(255):
+        y_prev: uint256 = y
+        y = (y * y + c) / (2 * y + b - D)
+        if y > y_prev:
+            if y - y_prev <= 1:
+                return y
+        else:
+            if y_prev - y <= 1:
+                return y
+
+    return y
+  
